@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="don">
+
+	
+	<select id="getMemInfo" resultType="kr.or.ddit.banban.vo.MemberVO" parameterType="kr.or.ddit.banban.vo.MemberVO">
+	select MEM_ID, MEM_PW, MEM_NIC, MEM_NM, MEM_BIR, MEM_ADDR, MEM_EMAIL, MEM_TEL from member
+	where mem_id=#{memId}
+	
+	</select>
+
+	
+	<insert id="insertDonationList" parameterType="kr.or.ddit.banban.vo.DonationListVO">
+	INSERT INTO DONATION_PAYMENT 
+	VALUES(DONATION_SEQ.nextval, #{memId}, SYSDATE, #{dpAmt})
+	</insert>
+	
+	<select id="searchAllDonationList" resultType="kr.or.ddit.banban.vo.DonationListVO">
+	select DP_NO as dpNo, MEM_ID as memId, DP_DATE as dpDate, DP_AMT as dpAmt
+	from DONATION_PAYMENT
+	ORDER by DP_NO desc
+	
+	</select>
+	
+</mapper>	
+

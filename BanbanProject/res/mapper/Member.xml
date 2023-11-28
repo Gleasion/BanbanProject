@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Member">
+
+	<insert id="insertMember" parameterType="kr.or.ddit.banban.vo.MemberVO">
+
+		insert into
+		member(mem_id, mem_pw, mem_nic, mem_nm, mem_bir, mem_addr,
+		mem_email,
+		mem_tel)
+		values(#{memId},#{memPw},#{memNic},#{memNm},#{memBir},#{memAddr}
+		,#{memEmail},#{memTel})
+
+	</insert>
+
+	<select id="checkLogin" parameterType="Map" resultType="String">
+
+		select mem_id
+		from member
+		where mem_id = #{memId} and
+		mem_pw = #{memPw}
+
+	</select>
+
+	<select id="checkCnt" parameterType="String" resultType="int">
+		select count(*) as cnt
+		from member
+		where mem_id = #{memId}
+	</select>
+
+	<update id="updateMember" parameterType="kr.or.ddit.banban.vo.MemberVO" >
+
+		update member
+		set 
+		mem_pw = #{memPw},
+		mem_addr = #{memAddr},
+		mem_nic = #{memNic},
+		mem_email = #{memEmail},
+		mem_tel = #{memTel}
+		
+		where mem_id = #{memId}
+
+	</update>
+
+	<delete id="deleteMember" parameterType="String">
+
+		delete from member
+		where mem_id = #{memId}
+
+	</delete>
+
+	<select id="getAllMember" resultType="kr.or.ddit.banban.vo.MemberVO">
+
+		select 
+		mem_id as memId,
+		mem_pw as memPw,
+		mem_nic as memNic,
+		mem_nm as memNm,
+		TO_CHAR(mem_bir, 'YYYY-MM-DD') as memBir,
+		mem_addr as memAddr,
+		mem_email as memEmail,
+		mem_tel as memTel
+		from member
+
+	</select>
+
+	<select id="getMember" parameterType="String" resultType="kr.or.ddit.banban.vo.MemberVO">
+		select 
+		mem_id as memId,
+		mem_pw as memPw,
+		mem_nic as memNic,
+		mem_nm as memNm,
+		TO_CHAR(mem_bir, 'YYYY-MM-DD') as memBir,
+		mem_addr as memAddr,
+		mem_email as memEmail,
+		mem_tel as memTel
+		from member
+		where mem_id = #{memId}
+	</select>
+	
+	<select id="selectMyBoard" resultType="kr.or.ddit.board.vo.BoardVO">
+		
+		SELECT 
+    	b.BD_NO	as bdNo,
+	    b.BD_TITLE as bdTitle,
+	    m.MEM_NIC as memNic,
+	    b.BD_REG as bdReg
+
+		FROM board b, member m
+		WHERE b.mem_id = #{memId} and b.mem_id = m.mem_id
+		ORDER BY BD_REG
+		
+	</select>
+
+</mapper>

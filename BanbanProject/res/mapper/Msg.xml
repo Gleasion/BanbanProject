@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Msg">
+
+	<resultMap type="kr.or.ddit.banban.vo.MsgVO" id="msgMap">
+		<result column="WM_NO" property="wmNo"/>
+		<result column="MEM_ID" property="memId"/>
+		<result column="WM_RECEIVE_ID" property="wmReceiveId"/>
+		<result column="WM_MSG" property="wmMsg"/>
+		<result column="WM_MDATE" property="wmMdate"/>
+	</resultMap>
+
+	<select id="sendAllMsg" parameterType="kr.or.ddit.banban.vo.MsgVO"
+		resultType="kr.or.ddit.banban.vo.MsgVO">
+
+		select
+		WM_NO as wmNo,
+		MEM_ID as memId,
+		WM_RECEIVE_ID as wmReceiveId,
+		WM_MSG as wmMsg,
+		WM_MDATE as wmMdate
+		from web_message
+		where mem_id = #{memId}
+
+	</select>
+	
+	<insert id="insertMsg" parameterType="kr.or.ddit.banban.vo.MsgVO">
+	
+		insert into web_message 
+		(WM_NO,
+		MEM_ID,
+		WM_RECEIVE_ID,
+		WM_MSG,
+		WM_MDATE)
+        values
+		(WM_NO.nextval,#{memId}, #{wmReceiveId}, #{wmMsg}, sysdate)
+	
+	</insert>
+	
+	<select id="getAllMsg" parameterType="kr.or.ddit.banban.vo.MsgVO" resultType="kr.or.ddit.banban.vo.MsgVO">
+	
+		select
+		WM_NO as wmNo,
+		MEM_ID as memId,
+		WM_RECEIVE_ID as wmReceiveId,
+		WM_MSG as wmMsg,
+		WM_MDATE as wmMdate
+		from web_message
+		where WM_RECEIVE_ID = #{memId}
+	</select>
+	
+	<select id="showDetailMsg" parameterType="kr.or.ddit.banban.vo.MsgVO" resultType="kr.or.ddit.banban.vo.MsgVO">
+
+		select
+		WM_NO as wmNo,
+		MEM_ID as memId,
+		WM_RECEIVE_ID as wmReceiveId,
+		WM_MSG as wmMsg,
+		WM_MDATE as wmMdate
+		from web_message
+		where WM_NO = #{wmNo}
+	</select>
+	
+	<delete id="deleteMsg" parameterType="String">
+		delete
+		from web_message
+		where WM_NO = #{wmNo}
+	</delete>
+	
+</mapper>

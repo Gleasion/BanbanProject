@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="admin">
+
+	<insert id="insertNotice"
+		parameterType="kr.or.ddit.board.vo.BoardVO">
+
+		insert into board 
+		(BD_NO, BD_CATE_NO, BD_TITLE, BD_CONT, BD_REG, MEM_ID)
+		values
+		(BD_seq.nextVal, #{bdCateNo}, #{bdTitle}, #{bdCont}, sysdate, #{memId})
+	
+	</insert>
+	
+	<insert id="insertNoticeComment"
+		parameterType="kr.or.ddit.board.vo.CommentVO">
+
+		insert into BOARD_COMMENT 
+		(BD_COM_NO, BD_NO, BD_CATE_NO, BD_COM_CONT, MEM_ID, BD_COM_REG)
+		values
+		(BOARD_COMMENT_SEQ.nextVal, #{bdNo}, 100, #{bdComCont}, #{memId}, sysdate)
+		
+	</insert>
+
+
+	<delete id="deleteNotice" parameterType="hashMap">
+		
+		DELETE from board
+		WHERE BD_NO = #{bdNo} and BD_CATE_NO = #{bdCateNo}
+		
+	</delete>
+	
+	<delete id="deleteNoticeComment" parameterType="hashMap">
+		
+		DELETE from BOARD_COMMENT
+		WHERE BD_COM_NO = #{bdComNo} and MEM_ID = #{memId}
+		
+	</delete>
+
+	<resultMap type="kr.or.ddit.board.vo.BoardVO" id="ncMap">
+		<result column="BD_NO" property="bdNo" />
+		<result column="BD_CATE_NO" property="bdCateNo" />
+		<result column="BD_TITLE" property="bdTitle" />
+		<result column="BD_CONT" property="bdCont" />
+		<result column="BD_HITS" property="bdHits" />
+		<result column="BD_REPCNT" property="bdRepCnt" />
+		<result column="MEM_ID" property="memId" />
+		<result column="BD_REG" property="bdReg" />
+		<result column="BAF_ID" property="fileId" />
+	</resultMap>
+		
+	<select id="getAllNotice" resultType="kr.or.ddit.board.vo.BoardVO">
+    SELECT 
+        b.BD_NO as bdNo,
+        b.BD_TITLE as bdTitle,
+        m.MEM_ID as memId,
+        m.MEM_NIC as memNic,
+        b.BD_REG as bdReg,
+        b.BD_REPCNT as bdRepCnt
+    FROM board b, member m
+    WHERE b.mem_id = m.mem_id and b.bd_repcnt > 10 
+    ORDER BY BD_REG
+	</select>
+
+	<select id="getAllBlackMember" resultType="kr.or.ddit.banban.vo.MemberVO">
+    SELECT 
+    MEM_ID as memID, MEM_NIC as memNic, MEM_NM as memNm, MEM_REPCNT as memRepCnt
+    FROM member
+    where MEM_REPCNT > 10 
+    ORDER BY MEM_ID
+
+	</select>
+	
+	<select id="showBlackList" resultType="kr.or.ddit.banban.vo.MemberVO">
+ 	SELECT DISTINCT
+    M.MEM_ID, M.MEM_NIC, M.MEM_NM, M.MEM_ADDR, M.MEM_EMAIL, M.MEM_TEL, M.MEM_REPCNT, B.REP_RSN
+    FROM BLACKLIST3 B, MEMBER M
+    WHERE M.MEM_ID = B.MEM_ID
+    ORDER BY MEM_ID
+	</select>
+	
+	<select id="getAllNoticeComment" parameterType="hashmap" resultType="kr.or.ddit.board.vo.CommentVO">
+		
+		SELECT 
+		c.BD_COM_NO as bdComNo,
+		c.BD_NO as bdNo,
+		c.BD_CATE_NO as bdCateNo,
+		c.BD_COM_CONT as bdComCont,
+		c.BD_COM_REPCNT as bdComRepcnt,
+		m.MEM_NIC as memNic,
+		c.BD_COM_REG as bdComReg
+		FROM BOARD_COMMENT c, member m
+		WHERE c.mem_id = m.mem_id
+<!-- 		and BD_CATE_NO = 100 -->
+		and BD_NO = #{bdNo}
+		ORDER BY BD_COM_REG
+		
+	</select>
+	
+	<select id="getWriterCate" resultType="kr.or.ddit.board.vo.BoardVO">
+		
+		SELECT 
+    	BD_CATE_NO as bdCateNo,
+    	MEM_ID as memId
+    	from board
+    	where bdCateNo = #{bdCateNo} and memId = #{memId}
+    	ORDER BY BD_REG
+		
+	</select>
+	
+	<select id="getAllNotice2" resultMap="ncMap">
+		
+		SELECT 
+		BD_NO as bdNo,
+		BD_CATE_NO as bdCateNo,
+		BD_TITLE as bdTitle,
+		BD_CONT as bdCont,
+		BD_REG as bdReg,
+		BD_HITS as bdHits,
+		BD_REPCNT as bdRepCnt,
+		MEM_ID as memId,
+		BAF_ID as fileId
+		FROM board
+		
+	</select>
+
+	<select id="searchBoard" parameterType="String" resultType="kr.or.ddit.board.vo.BoardVO">
+		SELECT board_no board_no
+		, board_title board_title
+		, board_writer board_writer
+		, board_content board_content
+		, board_date regDt
+		FROM jdbc_board
+		WHERE 1=1
+		<if test='board_no != null and board_no != ""'>
+			and board_no = #{board_no}
+		</if>
+		<if test='board_title != null and board_title != ""'>
+			and board_title = #{board_title}
+		</if>
+		<if test='board_writer != null and board_writer != ""'>
+			and board_writer = #{board_writer}
+		</if>
+		<if test='board_content != null and board_content != ""'>
+			and board_content like '%' || #{board_content} || '%'
+		</if>
+		
+	</select>
+
+	<select id="getBoardOneAdmin" parameterType="hashMap"
+		resultType="kr.or.ddit.board.vo.BoardVO">
+		
+		select 
+    	b.BD_NO as bdNo,
+    	b.BD_CATE_NO as bdCateNo,
+    	b.BD_TITLE      as bdTitle,
+    	b.BD_CONT    as bdCont,
+    	b.BD_REG    as bdReg,
+    	b.BD_HITS    as bdHits,
+    	b.BD_REPCNT    as bdRepCnt,
+    	m.MEM_NIC       as memNic,
+    	b.MEM_ID        as memId,
+    	b.BAF_ID       as bafId
+		from board b, member m
+		where b.mem_id = m.mem_id
+		and bd_no = #{bdNo}
+		
+	</select>
+
+	<select id="checkBoard" parameterType="String" resultType="int">
+		SELECT count(*) as cnt
+		FROM jdbc_board
+		WHERE board_no = #{bdNo}
+	</select>
+
+	<insert id="insertBlackList" parameterType="String">
+		
+	insert into BLACKLIST3
+	values(#{memId},'Test')
+	
+	
+	</insert>
+
+	
+</mapper>

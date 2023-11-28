@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<properties resource="db.properties"/>
+	
+	<settings>
+		<setting name="mapUnderscoreToCamelCase" value="true"/>
+		<setting name="jdbcTypeForNull" value="NULL" />
+	</settings>
+	
+	<environments default="dev">
+		<environment id="dev">
+			<transactionManager type="JDBC" />
+			<!-- MyBatis 자체 커넥션풀을 사용한다. -->
+			<dataSource type="POOLED">
+				<property name="driver" value="${driver}"/>
+				<property name="url" value="${url}"/>
+				<property name="username" value="${username}"/>
+				<property name="password" value="${password}"/>
+				<!-- 활성화된 최대 커넥션 수 -->
+				<property name="poolMaximumActiveConnections" value="2"/>
+				<!-- 유휴상태에서 최대 커넥션 수 -->
+				<property name="poolMaximumIdleConnections" value="2"/>
+			</dataSource>
+		</environment>
+
+	</environments>
+	
+	<mappers>
+		<mapper resource="mapper/board.xml"/>
+		<mapper resource="mapper/atchFile.xml"/>
+		<mapper resource="mapper/Member.xml" />
+		<mapper resource="mapper/Pet.xml" />
+		<mapper resource="mapper/donation.xml" />
+		<mapper resource="mapper/Msg.xml"/>
+		<mapper resource="mapper/find.xml"/>
+		<mapper resource="mapper/Hospital.xml"/>
+		<mapper resource="mapper/admin.xml"/>
+	</mappers>
+</configuration>

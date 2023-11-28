@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="atchFile">
+
+<!-- 파일 번호 시퀀스 입력-->
+	<insert id="insertAtchFile"
+		parameterType="kr.or.ddit.board.vo.AtchFileVO">
+
+		<selectKey keyProperty="bafId" resultType="long"
+			order="BEFORE">
+			select board_atch_file_seq.nextval from dual
+		</selectKey>
+
+		insert into board_atch_file
+		(BAF_ID, BAF_CDT)
+		values
+		(#{bafId}, sysdate)
+
+	</insert>
+
+	<insert id="insertAtchFileDetail">
+
+		insert into board_atch_file_detail
+		(
+			BAFD_NO,
+            BAF_ID,
+            BAFD_COURS,
+            BAFD_SAVENM,
+            BAFD_ORINM,
+            BAFD_EXTSN,
+            BAFD_CN,
+            BAFD_SIZE
+		)
+		values
+		(
+			(select nvl(max(BAFD_NO),0) + 1
+			from board_atch_file_detail
+			where baf_id = #{bafId}),
+            #{bafId},
+			#{bafdCours},
+			#{bafdSavenm},
+			#{bafdOrinm},
+			#{bafdExtsn},
+			#{bafdCn},
+			#{bafdSize}
+		)
+
+	</insert>
+	
+	<!-- 파일 전부 가져오고 싶음 -->
+	<select id="getAtchFileList" resultType="kr.or.ddit.board.vo.AtchFileVO">
+	
+		select BAFD_NO, BAF_ID
+			, REPLACE(BAFD_COURS,'C:\Users\nammj\4. HighJava\workdspace\BanbanProject\WebContent\img\fileImg/','/img/fileImg/') BAFD_COURS
+			, BAFD_SAVENM, BAFD_ORINM, BAFD_EXTSN, BAFD_CN, BAFD_SIZE from board_atch_file_detail
+		where BAF_ID = #{bafId}
+	
+	</select>
+	
+	<!-- 특정한 파일만 가져오고 싶음 -->
+	<select id="getAtchFileDetail" resultType="kr.or.ddit.board.vo.AtchFileVO">
+	
+		select *
+		from board_atch_file_detail
+		where
+			BAF_ID = #{bafId}
+			and BAFD_NO = #{bafdNo}
+	
+	</select>
+
+</mapper>

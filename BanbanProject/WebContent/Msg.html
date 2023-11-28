@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="author" content="">
+
+<!-- Bootstrap CSS -->
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+	integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+	crossorigin="anonymous">
+<script
+	src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script>
+	(function() {
+		var w = window;
+		if (w.ChannelIO) {
+			return w.console.error("ChannelIO script included twice.");
+		}
+		var ch = function() {
+			ch.c(arguments);
+		};
+		ch.q = [];
+		ch.c = function(args) {
+			ch.q.push(args);
+		};
+		w.ChannelIO = ch;
+		function l() {
+			if (w.ChannelIOInitialized) {
+				return;
+			}
+			w.ChannelIOInitialized = true;
+			var s = document.createElement("script");
+			s.type = "text/javascript";
+			s.async = true;
+			s.src = "https://cdn.channel.io/plugin/ch-plugin-web.js";
+			var x = document.getElementsByTagName("script")[0];
+			if (x.parentNode) {
+				x.parentNode.insertBefore(s, x);
+			}
+		}
+		if (document.readyState === "complete") {
+			l();
+		} else {
+			w.addEventListener("DOMContentLoaded", l);
+			w.addEventListener("load", l);
+		}
+	})();
+
+	ChannelIO('boot', {
+		"pluginKey" : "2387f2e2-a8ef-4c5a-99e6-95f2c37e6632"
+	});
+</script>
+<title>쪽지함</title>
+<style>
+.card {
+	width: 40rem;
+	position: relative;
+	margin: auto;
+	margin-top: 10%;
+}
+
+.card-title {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	text-align: center;
+	height: 100%;
+	object-fit: cover;
+}
+
+body {
+	padding: 0;
+	margin: 0;
+}
+
+div {
+	box-sizing: border-box;
+}
+
+/* 공지사항 이용안내 고객센터 */
+.infoContainer {
+	background-color: white;
+	display: flex;
+	height: 100px;
+	margin-bottom: 10px;
+}
+
+.infoContainer .item {
+	flex-grow: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	font-size: 13px;
+	text-decoration: none;
+	color: black;
+}
+
+.infoContainer .item>div:first-child {
+	margin-bottom: 2px;
+}
+</style>
+</head>
+
+<body cellpadding="0" cellspacing="0" marginleft="0" margintop="0"
+	width="100%" height="100%">
+
+	<div class="card" style="width: 40rem;">
+		<div class="card-title" style="margin-top: 30px;">
+
+			<div style="text-align: center;">
+				<a href="/Index.jsp"> <img id="mainlogo" src="/views/donation/임지.png" alt="mainlogo" style="width: 300px;">
+				</a>
+			</div>
+			<div class="infoContainer">
+				<a href="/getAllMsg.do" class="item">
+					<div>
+						받은쪽지함<br>
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+							fill="currentColor" class="bi bi-mailbox" viewBox="0 0 16 16">
+						<path
+								d="M4 4a3 3 0 0 0-3 3v6h6V7a3 3 0 0 0-3-3zm0-1h8a4 4 0 0 1 4 4v6a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V7a4 4 0 0 1 4-4zm2.646 1A3.99 3.99 0 0 1 8 7v6h7V7a3 3 0 0 0-3-3H6.646z" />
+						<path
+								d="M11.793 8.5H9v-1h5a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.354-.146l-.853-.854zM5 7c0 .552-.448 0-1 0s-1 .552-1 0a1 1 0 0 1 2 0z" />
+					</svg>
+					</div>
+				</a> <a href="/sendAllMsg.do" class="item">
+					<div>
+						보낸쪽지함<br>
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+							fill="currentColor" class="bi bi-send-check" viewBox="0 0 16 16">
+						<path
+								d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855a.75.75 0 0 0-.124 1.329l4.995 3.178 1.531 2.406a.5.5 0 0 0 .844-.536L6.637 10.07l7.494-7.494-1.895 4.738a.5.5 0 1 0 .928.372l2.8-7Zm-2.54 1.183L5.93 9.363 1.591 6.602l11.833-4.733Z" />
+						<path
+								d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-1.993-1.679a.5.5 0 0 0-.686.172l-1.17 1.95-.547-.547a.5.5 0 0 0-.708.708l.774.773a.75.75 0 0 0 1.174-.144l1.335-2.226a.5.5 0 0 0-.172-.686Z" />
+					</svg>
+					</div>
+				</a>
+				<button
+					onclick="window.open('/insertMsg.do', '_blank', 'toolbar=no, location=no, status=no, scrollbars=auto, width=800, height=600, top=10, left=10')"
+					class="item" style="background-color: #ffffff; border: none;">
+					<div>
+						쪽지보내기<br>
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+							fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
+						<path
+								d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z" />
+					</svg>
+					</div>
+				</button>
+			</div>
+		</div>
+	</div>
+</body>
+</script>
+</html>

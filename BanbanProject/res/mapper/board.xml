@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="board">
+
+<!-- 게시판 맵 -->
+	<resultMap type="kr.or.ddit.board.vo.BoardVO" id="ncMap">
+		<result column="RNUM" property="rnum" />
+		<result column="BD_NO" property="bdNo" />
+		<result column="BD_CATE_NO" property="bdCateNo" />
+		<result column="BD_TITLE" property="bdTitle" />
+		<result column="BD_CONT" property="bdCont" />
+		<result column="BD_HITS" property="bdHits" />
+		<result column="BD_REPCNT" property="bdRepCnt" />
+		<result column="MEM_ID" property="memId" />
+		<result column="BD_REG" property="bdReg" />
+		<result column="BAF_ID" property="bafId" />
+	</resultMap>
+
+<!-- 페이징처리 맵 -->
+	<resultMap type="kr.or.ddit.board.vo.BoardVO" id="pagingMap">
+		<result column="BD_NO" property="bdNo" />
+		<result column="BD_CATE_NO" property="bdCateNo" />
+		<result column="BD_TITLE" property="bdTitle" />
+		<result column="MEM_NIC" property="memNic" />
+		<result column="BD_REG" property="bdReg" />
+<!-- 		<result column="BAF_ID" property="bafId" /> -->
+	</resultMap>
+  	
+  	
+<!-- 전체 글 갯수 조회 -->
+  	<select id="countList" resultType="int">
+  		SELECT COUNT(*) FROM board
+  	</select>
+  	
+  	
+<!-- 페이지 별 리스트 출력 -->
+  	<select id="pagingList" parameterType="hashmap" resultMap="pagingMap">
+  		
+  		select A.* from(
+  			select ROWNUM AS RNUM,
+                B.* from(
+  				SELECT 
+                    b.BD_NO,
+                    b.BD_TITLE,
+                    m.MEM_NIC,
+                    b.BD_CATE_NO,
+                    b.BD_REG,
+                    b.BD_RATING
+                    FROM board b, member m
+                    WHERE b.mem_id = m.mem_id
+                    and BD_CATE_NO = #{bdCateNo}
+                    order by bd_no desc        
+				)B
+                <![CDATA[
+                where ROWNUM <= #{end}
+            )A
+            where A.rnum >= #{start}
+    		]]>
+			
+	</select>
+
+<!-- 카테고리에 해당하는 모든 게시글 조회 -->
+	<select id="getAllBoard" resultType="kr.or.ddit.board.vo.BoardVO">
+		
+		SELECT 
+    	b.BD_NO	as bdNo,
+	    b.BD_TITLE as bdTitle,
+	    m.MEM_NIC as memNic,
+	    b.BD_REG as bdReg
+		FROM board b, member m
+		WHERE b.mem_id = m.mem_id
+		and BD_CATE_NO = #{bdCateNo}
+		ORDER BY BD_REG
+		
+	</select>
+
+<!-- 모든 게시글 조회 -->	
+	<select id="getAllNotice2" resultMap="ncMap">
+		
+		SELECT 
+		BD_NO as bdNo,
+		BD_CATE_NO as bdCateNo,
+		BD_TITLE as bdTitle,
+		BD_CONT as bdCont,
+		BD_REG as bdReg,
+		BD_HITS as bdHits,
+		BD_REPCNT as bdRepCnt,
+		MEM_ID as memId,
+		BAF_ID as fileId
+		FROM board
+		
+	</select>
+
+<!-- 게시글 하나 조회 -->
+	<select id="getBoardOne" parameterType="hashMap"
+		resultType="kr.or.ddit.board.vo.BoardVO">
+		
+		select 
+    	b.BD_NO as bdNo,
+    	b.BD_CATE_NO as bdCateNo,
+    	b.BD_TITLE      as bdTitle,
+    	b.BD_CONT    as bdCont,
+    	b.BD_REG    as bdReg,
+    	b.BD_HITS    as bdHits,
+    	b.BD_REPCNT    as bdRepCnt,
+    	m.MEM_NIC       as memNic,
+    	b.MEM_Id       as memId,
+    	b.BAF_ID       as bafId,
+    	b.BD_RATING    as bdRating
+		from board b, member m
+		where b.mem_id = m.mem_id
+		and bd_no = #{bdNo}
+		
+	</select>	
+	
+<!-- 게시글 당 댓글 조회	 -->
+	<select id="getAllComment" parameterType="hashMap" resultType="kr.or.ddit.board.vo.CommentVO">
+		
+		SELECT 
+		c.BD_COM_NO as bdComNo,
+		c.BD_NO as bdNo,
+		c.BD_CATE_NO as bdCateNo,
+		c.BD_COM_CONT as bdComCont,
+		c.BD_COM_REPCNT as bdComRepcnt,
+		c.mem_ID as memId,
+		m.MEM_NIC as memNic,
+		c.BD_COM_REG as bdComReg
+		FROM BOARD_COMMENT c, member m
+		WHERE c.mem_id = m.mem_id
+		and BD_NO = #{bdNo}
+		ORDER BY BD_COM_REG
+		
+	</select>
+	
+<!-- 게시글 번호당 병원 답변 조회	 -->
+	<select id="getAllAnswerBoard" parameterType="hashMap" resultType="kr.or.ddit.board.vo.AnswerVO">
+				
+		select
+		a.HOSP_CD as hospCd,
+		a.BD_ANSWER_NO as bdAnswerNo,
+		a.BD_CONT as bdCont,
+		a.BD_REG as bdReg,
+		h.HOSP_NM as hospNm,
+		a.BD_NO as bdNo
+		from BOARD_ANSWER a, HOSPITAL h
+		where a.HOSP_CD = h.HOSP_CD
+		and BD_NO = #{bdNo}
+		ORDER BY BD_REPCNT
+
+		
+	</select>
+		
+<!--  병원 답변 조회	 -->
+	<select id="getAllComment2" parameterType="hashmap" resultType="kr.or.ddit.board.vo.CommentVO">
+		
+		SELECT 
+		c.BD_COM_NO as bdComNo,
+		c.BD_NO as bdNo,
+		c.BD_CATE_NO as bdCateNo,
+		c.BD_COM_CONT as bdComCont,
+		c.BD_COM_REPCNT as bdComRepcnt,
+		c.HOSP_ID as hospId,
+		c.BD_COM_REG as bdComReg
+		FROM BOARD_COMMENT2 c, HOSPITAL H
+		WHERE c.HOSP_CD = H.HOSP_CD
+		and BD_NO = #{bdNo}
+		ORDER BY BD_COM_REG
+		
+	</select>
+	
+	<select id="getBoard" parameterType="String"
+		resultType="kr.or.ddit.board.vo.BoardVO">
+		SELECT board_no board_no
+		, board_title board_title
+		, board_writer board_writer
+		, board_content board_content
+		, board_date regDt
+		FROM jdbc_board
+		WHERE 1=1
+		<if test='board_no != null and board_no != ""'>
+			and board_no = #{board_no}
+		</if>
+		<if test='board_title != null and board_title != ""'>
+			and board_title = #{board_title}
+		</if>
+		<if test='board_writer != null and board_writer != ""'>
+			and board_writer = #{board_writer}
+		</if>
+		<if test='board_content != null and board_content != ""'>
+			and board_content like '%' || #{board_content} || '%'
+		</if>
+		
+	</select>
+
+<!-- 해당 댓글 하나 -->
+	<select id="getCommentOne" parameterType="hashMap"
+		resultType="kr.or.ddit.board.vo.CommentVO">
+		
+		select BD_COM_NO, BD_NO, BD_CATE_NO
+    	from BOARD_COMMENT
+    	where BD_COM_NO = #{bdComNo}
+
+	</select>
+	
+<!-- 해당 답변 하나 -->
+	<select id="getAnswerBoardOne" parameterType="hashMap"
+		resultType="kr.or.ddit.board.vo.AnswerVO">
+		
+		select BD_ANSWER_NO
+    	from BOARD_ANSWER
+    	where BD_ANSWER_NO = #{bdAnswerNo}
+
+	</select>
+	
+<!-- 게시판 신고수 증가 -->
+	<select id="updateBoardRepcnt" parameterType="hashMap"
+		resultType="kr.or.ddit.board.vo.BoardVO">
+		
+		UPDATE board
+		SET BD_REPCNT = (BD_REPCNT + 1)
+		WHERE BD_NO = #{bdNo}
+		
+	</select>
+	
+<!-- 게시판 조회수 증가 -->
+	<select id="updateBoardHits" parameterType="hashMap"
+		resultType="kr.or.ddit.board.vo.BoardVO">
+		
+		UPDATE board
+		SET BD_HITS = (BD_HITS + 1)
+		WHERE BD_NO = #{bdNo}
+		
+	</select>
+
+<!-- 멤버 신고수 증가 -->
+	<select id="updateMemRepcnt" parameterType="hashMap"
+		resultType="kr.or.ddit.banban.vo.MemberVO">
+		
+		UPDATE member
+		SET MEM_REPCNT = (MEM_REPCNT + 1)
+		WHERE MEM_ID = #{memId}
+		
+	</select>
+	
+<!-- 댓글 신고수 증가 -->
+	<select id="updateCommentRepcnt" parameterType="hashMap"
+		resultType="kr.or.ddit.board.vo.CommentVO">
+		
+		UPDATE BOARD_COMMENT
+		SET BD_COM_REPCNT = (BD_COM_REPCNT + 1)
+		WHERE BD_COM_NO = #{bdComNo}
+		
+	</select>
+	
+	<select id="checkBoard" parameterType="String" resultType="int">
+		SELECT count(*) as cnt
+		FROM jdbc_board
+		WHERE board_no = #{bdNo}
+	</select>
+
+<!-- 게시글 등록 -->
+	<insert id="insertBoard"
+		parameterType="kr.or.ddit.board.vo.BoardVO">
+
+		insert into board 
+		(BD_NO, BD_CATE_NO, BD_TITLE, BD_CONT, BD_REG, MEM_ID
+		<if test="bafId!=-1">
+		, BAF_ID
+		</if>
+		, BD_RATING
+		)
+		values
+		(BD_seq.nextVal, #{bdCateNo}, #{bdTitle}, #{bdCont}, sysdate, #{memId}
+		<if test="bafId!=-1">
+		, #{bafId}
+		</if>
+		, #{bdRating}
+		)
+	
+	</insert>
+	
+<!-- 병원 답변 등록(게시판)-->
+	<insert id="insertAnswerBoard" parameterType="kr.or.ddit.board.vo.AnswerVO">
+
+		insert into BOARD_ANSWER 
+		(HOSP_CD, BD_ANSWER_NO, BD_CONT, BD_REG, BD_NO)
+		values
+		(#{hospCd}, BOARD_ANSWER_SEQ.nextVal, #{bdCont}, sysdate, #{bdNo})
+	
+	</insert>
+
+<!-- 댓글 등록	 -->
+	<insert id="insertBoardComment"
+		parameterType="kr.or.ddit.board.vo.CommentVO">
+
+		insert into BOARD_COMMENT 
+		(BD_COM_NO, BD_NO, BD_CATE_NO, BD_COM_CONT, MEM_ID, BD_COM_REG)
+		values
+		(BOARD_COMMENT_SEQ.nextVal, #{bdNo}, #{bdCateNo}, #{bdComCont}, #{memId}, sysdate)
+		
+	</insert>
+
+<!-- 병원 답변 등록	 -->
+	<insert id="insertAnswerComment"
+		parameterType="kr.or.ddit.board.vo.CommentVO">
+		
+		INSERT INTO BOARD_COMMENT2
+		(BD_COM_NO, BD_NO, BD_CATE_NO, BD_COM_CONT, MEM_ID, HOSP_ID, BD_COM_REG)
+		VALUES
+		(BOARD_COMMENT_SEQ.nextVal,  #{bdNo}, 200, #{bdComCont}, NULL, #{memId}, sysdate)
+	
+<!-- 		insert into BOARD_COMMENT  -->
+<!-- 		(BD_COM_NO, BD_NO, BD_CATE_NO, BD_COM_CONT, MEM_ID, BD_COM_REG) -->
+<!-- 		values -->
+<!-- 		(BOARD_COMMENT_SEQ.nextVal, #{bdNo}, 200, #{bdComCont}, #{memId}, sysdate) -->
+		
+	</insert>
+
+<!-- 게시글 신고 등록 -->
+	<insert id="insertReportNotice" parameterType="kr.or.ddit.board.vo.ReportVO">
+	
+		INSERT INTO board_report (MEM_ID, BD_NO, BLLST_RSN, REPORTER, REP_CATE)
+		SELECT MEM_ID, #{bdNo}, #{bllstRsn}, #{reporter}, #{repCate}
+		FROM board
+		WHERE bd_no = #{bdNo}
+		
+	</insert>
+	
+<!-- 댓글 신고 등록 -->
+	<insert id="insertReportComment" parameterType="kr.or.ddit.board.vo.ReportVO">
+	
+		INSERT INTO board_report (MEM_ID, BLLST_RSN, REPORTER, REP_CATE, BD_COM_NO)
+		SELECT #{memId}, #{bllstRsn}, #{reporter}, #{repCate}, #{bdComNo}
+		FROM BOARD_COMMENT
+		WHERE BD_COM_NO = #{bdComNo}
+		
+	</insert>
+
+<!-- 게시글 수정 -->
+	<update id="updateBoard" parameterType="hashMap">
+
+		UPDATE board
+		SET
+        BD_TITLE = #{bdTitle},
+        <if test="bafId > 0">
+        	BAF_ID = #{bafId},
+        </if>
+        BD_CONT = #{bdCont}
+		WHERE BD_NO = #{bdNo} and MEM_ID = #{memId}
+
+	</update>
+	
+<!-- 게시글 리뷰수정 -->
+	<update id="updateBoardreview" parameterType="hashMap">
+
+		UPDATE board
+		SET
+        BD_TITLE = #{bdTitle},
+        BD_RATING = #{bdRating},
+        <if test="bafId > 0">
+        	BAF_ID = #{bafId},
+        </if>
+        BD_CONT = #{bdCont}
+		WHERE BD_NO = #{bdNo} and MEM_ID = #{memId}
+
+	</update>	
+
+<!-- 병원 답변 수정 -->
+	<update id="updateAnswerBoard" parameterType="hashMap">
+
+		UPDATE BOARD_ANSWER
+		SET
+        BD_CONT = #{bdCont}
+		WHERE BD_ANSWER_NO = #{bdAnswerNo} and HOSP_CD = #{hospCd}
+
+	</update>
+
+<!-- 게시글 삭제 -->
+	<delete id="deleteBoard" parameterType="hashMap">
+		
+		DELETE from board
+		WHERE BD_NO = #{bdNo} and MEM_ID = #{memId}
+		
+	</delete>
+	
+<!-- 문의 답변 삭제 -->
+	<delete id="deleteAnswerBoard" parameterType="hashMap">
+		
+		DELETE from BOARD_ANSWER
+		WHERE BD_ANSWER_NO = #{bdAnswerNo}
+		
+	</delete>
+	
+<!-- 댓글 삭제 -->
+	<delete id="deleteBoardComment" parameterType="hashMap">
+		
+		DELETE from BOARD_COMMENT
+		WHERE BD_COM_NO = #{bdComNo} and MEM_ID = #{memId}
+		
+	</delete>
+
+</mapper>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="find">
+
+	
+	<select id="findId" parameterType="kr.or.ddit.banban.vo.MemberVO" resultType="kr.or.ddit.banban.vo.MemberVO" >
+	
+	select MEM_ID from member
+	where mem_nm=#{memNm}
+	and mem_email=#{memEmail}
+	
+	</select>
+	
+	<select id="findPw" parameterType="kr.or.ddit.banban.vo.MemberVO" resultType="kr.or.ddit.banban.vo.MemberVO" >
+	
+	select MEM_PW from member
+	where  mem_id = #{memId}
+	and mem_email=#{memEmail}
+    and mem_nm= #{memNm}
+	
+	</select>
+
+	
+	
+</mapper>	

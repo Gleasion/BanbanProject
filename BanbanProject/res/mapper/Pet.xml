@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Pet">
+
+	<insert id="insertPet" parameterType="kr.or.ddit.banban.vo.PetVO">
+
+		insert into
+		pet(pet_no, mem_id, pet_name, pet_regno, pet_chip, pet_kind, 
+		pet_gender, pet_neu, pet_bir, pet_etc, pet_atchfile)
+		values((select nvl(max(pet_no),0)+1 from pet),#{memId},#{petNm},#{petRegno},#{petChip},#{petKind},
+		#{petGender},#{petNeu},TRUNC(TO_DATE(#{petBir}, 'YYYY-MM-DD HH24:MI:SS')),#{petEtc},#{petAtchFileName})
+
+	</insert>
+
+	<select id="checkCnt" parameterType="String" resultType="int">
+		select count(*) as cnt
+		from pet
+		where pet_no = #{petNo}
+	</select>
+
+	<update id="updatePet" parameterType="kr.or.ddit.banban.vo.PetVO">
+	
+		update pet
+		set 
+		pet_name = #{petNm},
+		pet_regno = #{petRegno},
+		pet_chip = #{petChip},
+		pet_kind = #{petKind},
+		pet_gender = #{petGender},
+		pet_neu = #{petNeu},
+		pet_bir = #{petBir},
+		pet_etc = #{petEtc}
+		<if test="petAtchFileName!=null and petAtchFileName!=''">
+			,pet_atchfile = #{petAtchFileName}
+		</if>
+		where pet_no = #{petNo}
+	</update>
+
+	<delete id="deletePet" parameterType="String">
+
+		delete from pet
+		where pet_no = #{petNo}
+
+	</delete>
+
+	<select id="getAllPet" parameterType="String" resultType="kr.or.ddit.banban.vo.PetVO">
+
+		select 
+		p.pet_no	as petNo,
+		m.mem_id	as memId,
+		p.pet_name 	 as petNm,
+        m.mem_nm      as memNm,
+		p.pet_regno	 as petRegno,
+		p.pet_chip	 as petChip,
+		p.pet_kind	 as petKind,
+		p.pet_gender	 as petGender,
+		p.pet_neu		 as petNeu,
+		TO_CHAR(p.pet_bir, 'YYYY-MM-DD')		 as petBir,
+		p.pet_etc		 as petEtc,
+        m.mem_addr    as memAddr,
+        p.pet_atchfile	as petAtchFileName 
+		
+		from pet p, member m
+		where p.mem_id = m.mem_id and m.mem_id= #{memId}
+	</select>
+
+	<select id="getPet" parameterType="String" resultType="kr.or.ddit.banban.vo.PetVO">
+		
+		select 
+		p.pet_no	as petNo,
+        m.mem_nm      as memNm,
+		p.pet_name 	 as petNm,
+		p.pet_regno	 as petRegno,
+		p.pet_chip	 as petChip,
+		p.pet_kind	 as petKind,
+		p.pet_gender	 as petGender,
+		p.pet_neu		 as petNeu,
+		TO_CHAR(p.pet_bir, 'YYYY-MM-DD')		 as petBir,
+		p.pet_etc		 as petEtc,
+        m.mem_addr    as memAddr,
+		p.pet_atchfile	as petAtchFileName 
+		 
+		from pet p, member m
+		where p.mem_id = m.mem_id and pet_no = #{petNo}
+	</select>
+
+</mapper>

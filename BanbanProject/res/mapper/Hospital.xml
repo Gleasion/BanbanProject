@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Hospital">
+
+	<insert id="insertHosp" parameterType="kr.or.ddit.banban.vo.HospitalVO">
+
+		insert into
+		HOSPITAL (HOSP_CD,HOSP_PW,HOSP_NM,HOSP_PS_START,HOSP_PS_END,HOSP_ENT_NO,HOSP_ADDR,HOSP_TEL)
+		values(#{hospCd},#{hospPw},#{hospNm},TRUNC(TO_DATE(#{hospPsStart}, 'YYYY-MM-DD HH24:MI:SS')),TRUNC(TO_DATE(#{hospPsEnd}, 'YYYY-MM-DD HH24:MI:SS')),#{hospEntNo},#{hospAddr},#{hospTel})
+
+	</insert>
+
+	<select id="checkHospLogin" parameterType="Map" resultType="String">
+
+		select HOSP_CD
+		from HOSPITAL
+		where HOSP_CD = #{hospCd} and
+		HOSP_PW = #{hospPw}
+
+	</select>
+
+	<select id="checkHosp" parameterType="String" resultType="int">
+		select count(*) as cnt
+		from HOSPITAL
+		where HOSP_CD = #{hospCd}
+	</select>
+
+	<update id="updateHosp" parameterType="kr.or.ddit.banban.vo.HospitalVO" >
+
+		update HOSPITAL
+		set 
+		HOSP_PW = #{hospPw},
+		HOSP_PS_START = TRUNC(TO_DATE(#{hospPsStart}, 'YYYY-MM-DD HH24:MI:SS')),
+		HOSP_PS_END = TRUNC(TO_DATE(#{hospPsEnd}, 'YYYY-MM-DD HH24:MI:SS')),
+		HOSP_ENT_NO = #{hospEntNo},
+		HOSP_ADDR = #{hospAddr}
+		HOSP_TEL = #{hospTel}
+		where HOSP_CD = #{hospCd}
+
+	</update>
+
+	<delete id="deleteHosp" parameterType="String">
+
+		delete from HOSPITAL
+		where HOSP_CD = #{hospCd}
+
+	</delete>
+
+	<select id="getAllHosp" resultType="kr.or.ddit.banban.vo.HospitalVO">
+
+		
+		select 
+		HOSP_CD as hospCd,
+		HOSP_NM as hospNm,
+		to_char(HOSP_PS_START, 'YYYY-MM-DD') as hospPsStart,
+		to_char(HOSP_PS_END, 'YYYY-MM-DD') as hospPsEnd,
+		HOSP_ENT_NO as hospEntNo,
+		HOSP_ADDR as hospAddr,
+		HOSP_TEL as hospTel
+		from HOSPITAL order by hosp_ps_start desc
+
+	</select>
+
+	<select id="getHosp" parameterType="String" resultType="kr.or.ddit.banban.vo.HospitalVO">
+		select 
+		HOSP_CD as hospCd,
+		HOSP_NM as hospNm,
+		to_char(HOSP_PS_START, 'YYYY-MM-DD') as hospPsStart,
+        to_char(HOSP_PS_END, 'YYYY-MM-DD') as hospPsEnd,
+		HOSP_ENT_NO as hospEntNo,
+		HOSP_ADDR as hospAddr,
+		HOSP_TEL as hospTel
+		from HOSPITAL
+		where HOSP_CD = #{hospCd}
+	</select>
+
+</mapper>
